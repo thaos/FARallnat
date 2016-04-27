@@ -194,9 +194,8 @@ add_param <- function(b_onperiod, operation, name){
   dcast(bootsample+time~param, data=.)
   b_order  <- order(b_onperiod$time)
   new_param <- eval(substitute(operation), envir=b_onperiod[b_order,])
-  b_onperiod[b_order,] <- cbind(b_onperiod[b_order,], new_param)
   rownames_ans %<>% append(., name)
-  ans[dim(ans)[1],,] <- new_param
+  ans[dim(ans)[1],,][b_order] <- new_param
   dimnames(ans)[[1]] <- rownames_ans
   ans
 }

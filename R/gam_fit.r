@@ -1,5 +1,6 @@
 #' @importFrom mgcv gam 
 #' @importFrom mgcv predict.gam 
+#' @importFrom mgcv s
 #' @importFrom reshape2 melt 
 #' @importFrom reshape2 dcast 
 

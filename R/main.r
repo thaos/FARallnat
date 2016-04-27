@@ -22,6 +22,7 @@
 #' of the function compute_far
 #' @param ... additional parameters needed in the compute_far function if
 #' required
+#' @param ci_p the level of the confidence intervals
 #' @return return a dataframe with the confidence intervals for the FAR and all
 #' the other computed parameters (e.g, p and q) at each time
 #' @examples
@@ -31,7 +32,7 @@
 #' # same with ebm decompositon and a gpd fit over the 90% quantil
 #' ans <- compute_forall(compute_far.dx_ebm_fit, l_models=c("cnrm", "ipsl"), stat_model=gpd_fit, qthreshold =0.90, p=0.01, R=3)
 #' @export
-compute_forall <- function(compute_far, l_models=NULL, xp=1.6, p=NULL,  y="eur_tas", x="gbl_tas", time="year", res_folder=deparse(substitute(compute_far)), ...){
+compute_forall <- function(compute_far, l_models=NULL, xp=1.6, p=NULL,  y="eur_tas", x="gbl_tas", time="year", ci_p=0.9, res_folder=deparse(substitute(compute_far)), ...){
   dir.create(res_folder, recursive=TRUE)
   if(is.null(l_models)){
     l_models <- c("bcc", "bnu", "cccma", "cmcc", "cnrm", "csiro", "fio", "gfdl", "giss", "iap", "ichec", "ingv", "inm", "ipsl", "miroc", "mohc", "mpim", "mri", "ncar", "ncc", "obs")
@@ -40,7 +41,7 @@ compute_forall <- function(compute_far, l_models=NULL, xp=1.6, p=NULL,  y="eur_t
   l_far <- character(length(l_models))
   for(i in seq_along(l_models)){
     cat("------------------------------------\n", l_models[i])
-    ans <- compute_far(l_models[i], xp=xp, y=y, x=x, time=time, ...) 
+    ans <- compute_far(l_models[i], xp=xp, y=y, x=x, time=time, ci_p=ci_p, ...) 
     if(!is.null(p)) ans <- continue_with_q(ans, l_models[i], p)
     saveRDS(ans, file=l_far_files[i]) 
   }
@@ -50,6 +51,53 @@ compute_forall <- function(compute_far, l_models=NULL, xp=1.6, p=NULL,  y="eur_t
   attr(merged_res, "match.call") <- mget(names(formals()),sys.frame(sys.nframe()))
   merged_res
 }
+
+#' Compute the FAR from observations using constraints 
+#'
+#' \code{compute_forall} Compute the FAR from the observations using the GCM to
+#' constrain the evolution of the statistical distribution of the variable of
+#' interest y. The relationship between the variable y and the covariate x in the
+#' observational should be in the observation the same as in the GCM.
+#'
+#' @param merged_res a result from the compute_forall function. the dataset
+#' "obs" should have been treated in the compute_forall function.
+#' @return return a dataframe with the confidence intervals for the constrained FAR and all
+#' the other computed parameters (e.g, p and q) at each time.
+#' @examples
+#' # compute the FAR for the CNRM and the IPSL GCMs using a  gam decomposition
+#' # and a gaussian fit with only three bootstrap samples
+#' ans <- compute_forall(compute_far.default, stat_model=gauss_fit, p=0.01, R=3)
+#' ans_cstr <- continue_with_constrained_far(ans) 
+#' summary_plot(ans_cstr)
+#' @export
+continue_with_constrained_far <- function(merged_res){
+  mcall <- attr(merged_res, "match.call")
+  x <- mcall$x
+  y <- mcall$y
+  xp <- mcall$xp
+  p <- mcall$p
+  ci_p <- mcall$ci_p
+  res_folder <- mcall$res_folder
+  l_models <- mcall$l_models
+  l_models <- l_models[l_models != "obs"]
+  l_far_files <- paste(res_folder, "/", l_models, "_cstr.rds", sep="")
+  far_o <- readRDS(paste(res_folder,"/obs.rds", sep="")) 
+  for(i in seq_along(l_models)){
+    cat("------------------------------------\n", l_models[i])
+    far_m <- readRDS(paste(res_folder,"/", l_models[i], ".rds", sep="")) 
+    ans <- constrained_far(far_o, far_m, model=l_models[i], xp=xp, ci_p=ci_p) 
+    if(!is.null(p)) ans <- continue_with_q(ans, l_models[i], p)
+    saveRDS(ans, file=l_far_files[i]) 
+  }
+  datas <- do.call(rbind, mapply(function(model, file){cbind(readRDS(file)$data, method=model)}, model=l_models, file=l_far_files, SIMPLIFY=FALSE))
+  ic_fars <- do.call(rbind, mapply(function(model, file){readRDS(file)$ic_far}, model=l_models, file=l_far_files, SIMPLIFY=FALSE))
+  merged_res <- merge(ic_fars, datas, by.x=c("time", "method"), by.y=c("year", "method"))
+  attr(merged_res, "match.call") <- mcall
+  merged_res
+}
+#' ans <- compute_forall(compute_far.default, stat_model=gauss_fit, p=0.01, R=3)
+#' ans_cstr <- continue_with_constrained_far(ans) 
+#' summary_plot(ans_cstr)
 
 #' Compute the quantile corresponding to a probability of exceedance p 
 #'
@@ -83,6 +131,8 @@ continue_with_q <- function(ans, model,  p){
 #' compute_forall
 #'
 #' @param merged_res results of the compute_far_fonction
+#' @param pdf_name the name of the pdf file containing the plots. the pdf can be
+#' found in the same folder as the results foolders of merged_res
 #' @return saves a pdf files called "summary.pdf" with the plots in same folder
 #' as the res_forlder of the compute_forall function
 #' @examples
@@ -92,7 +142,7 @@ continue_with_q <- function(ans, model,  p){
 #' # summary plot
 #' summary_plot(ans)
 #' @export
-summary_plot <- function(merged_res){
+summary_plot <- function(merged_res, pdf_name="summary.pdf"){
   mcall <- attr(merged_res, "match.call")
   x <- mcall$x
   y <- mcall$y
@@ -138,12 +188,13 @@ summary_plot <- function(merged_res){
   }
   ########################################################################################################
   p_far <- plot_pannel_far(merged_res, axis_trans="al", main="FAR from 1850 to 2100", col=col)
-  pdf(paste(res_folder,"/summary.pdf", sep=""), height=5+round(0.5*length(col)), width=5+round(0.5*length(col)))
+  pdf(paste(res_folder,"/", pdf_name, sep=""), height=5+round(0.5*length(col)), width=5+round(0.5*length(col)))
       plot(p_dx)
       plot(p_mu)
       plot(p_p)
       plot(p_q)
       plot(p_far)
+      plot_far(merged_res, axis_trans="al", main="FAR from 1850 to 2100", col=col)
   dev.off()
 }
 

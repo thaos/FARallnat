@@ -101,7 +101,7 @@ make_compute_far <- function(ebm_bsamples=ebm_bsamples.default,
 #' List of already created compute_far functions
 #' \itemize{
 #' \item compute_far.default
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; no scaling factors 
 #'Decompose x: gam model :x_all = beta_nat * nat + s(ant); shift mean(ant) to 0 between 1850 and 1879
 #'}
@@ -115,7 +115,7 @@ compute_far.default <- make_compute_far(ebm_bsamples=ebm_bsamples.default,
                                                 )
 #' \itemize{
 #' \item compute_far.sf_gaussian
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; random scaling factors 
 #'Decompose x: gam model :x_all = beta_nat * nat + s(ant); shift mean(ant) to 0 between 1850 and 1879
 #'}
@@ -129,8 +129,8 @@ compute_far.sf_gaussian <- make_compute_far(ebm_bsamples=ebm_bsamples.sf_gaussia
                                                     )
 
 #' \itemize{
-#' \item compute_far.sf_gaussian
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' \item compute_far.sf_gaussian.dx_raw
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; random scaling factors 
 #'Decompose x: keeps EBM simulations as they are 
 #'}
@@ -146,8 +146,8 @@ compute_far.sf_gaussian.dx_raw <- make_compute_far(ebm_bsamples=ebm_bsamples.sf_
 
 
 #' \itemize{
-#' \item compute_far.sf_gaussian
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' \item compute_far.sf_gaussian.dx_lm_gno
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; random scaling factors ; responses ghg, nat, and others instead of ant and nat
 #'Decompose x: linear model: x_all = beta_nat * nat + beta_ghg * ghg
 #'+ beta_others * others; shift mean(ghg) and mean(others) to 0 between 1850 and 1879
@@ -164,8 +164,8 @@ compute_far.sf_gaussian.dx_lm_gno <- make_compute_far(ebm_bsamples=ebm_bsamples.
                                                            )
 
 #' \itemize{
-#' \item compute_far.sf_gaussian
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' \item compute_far.sf_gaussian.dx_gam_gno
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; random scaling factors ; responses ghg, nat, and others instead of ant and nat
 #'Decompose x: gam model : x_all = beta_nat * nat + beta_ghg * ghg
 #'+ s(others); shift mean(ghg) and mean(others) to 0 between 1850 and 1879
@@ -182,8 +182,8 @@ compute_far.sf_gaussian.dx_gam_gno <- make_compute_far(ebm_bsamples=ebm_bsamples
                                                            )
 
 #' \itemize{
-#' \item compute_far.sf_gaussian
-#' EBM simulations: takes models parameters if available, otherwise takes an
+#' \item compute_far.dx_ebm_fit
+#' EBM simulations: takes model parameters if available, otherwise takes an
 #' available set of parameters at randoms; no scaling factors
 #' Decompose x: EBM_fit (ordinary least square)
 #'}

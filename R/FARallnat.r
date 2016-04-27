@@ -48,7 +48,9 @@
 #' function \code{make_compute_far}. Once a compute_far function is created, it
 #' can be applied to all the available datasets of CMIP-5 simulations using the
 #' function \code{compute_forall} and a first visualization can be done with
-#' \code{summary_plot}
+#' \code{summary_plot}. \code(continue_with_constrained_far} can also be use
+#' after \code{compute_forall} to reestimated the far from the observations
+#' using constraints from the GCM results.
 #'
 #' @docType package
 #' @name FARallnat 
