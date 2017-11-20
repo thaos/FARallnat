@@ -140,18 +140,18 @@ imput_aurel_byyear <- function(RR){
 }
 
 
-# Imputs value in the case of Relative Risk(RR) being equal to NA 
-# 
-# 
-# \code{imput_aure} Imputs value in the case of Relative Risk(RR) being equal
-# to NA for each bootstrap sample and for each year.
-#
-# @param boot_res_RR a matrix of the bootstrap estimate of RR for each year and
-# each bootstrap sample
-# @return returns a matrix the NA value replaced half of the time by +infinity
-# and half by the time by zero
-# @examples
-# # Needs to be done !
+#' Imputs value in the case of Relative Risk(RR) being equal to NA 
+#' 
+#' 
+#' \code{imput_aure} Imputs value in the case of Relative Risk(RR) being equal
+#' to NA for each bootstrap sample and for each year.
+#'
+#' @param boot_res_RR a matrix of the bootstrap estimate of RR for each year and
+#' each bootstrap sample
+#' @return returns a matrix the NA value replaced half of the time by +infinity
+#' and half by the time by zero
+#' @examples
+#' # Needs to be done !
 #' @export
 imput_aurel <- function(boot_res_RR){
   RR <- apply(boot_res_RR, 1, imput_aurel_byyear)
