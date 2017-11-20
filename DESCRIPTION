@@ -1,0 +1,23 @@
+Package: FARallnat
+Title: FAR analysis on European Summer Temperature
+Description: Toolbox to analyse the FAR on the Europen Summer Temperature
+Version: 0.1
+Authors@R: person("Soulivanh", "Thao", email="soulivanh.thao@gmail.com",
+    role=c("aut","cre")
+    ) #getOptions('devtools.desc.author')
+Depends:
+    R (>= 3.0.2),
+    FARg
+License: GPL-2
+LazyData: true
+Imports:
+	ggplot2,
+	reshape2,
+	scales,
+	gridExtra,
+	grid,
+	gtable,
+	fastmatch,
+	magrittr,
+	mgcv
+RoxygenNote: 6.0.1

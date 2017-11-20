@@ -152,6 +152,7 @@ imput_aurel_byyear <- function(RR){
 # and half by the time by zero
 # @examples
 # # Needs to be done !
+#' @export
 imput_aurel <- function(boot_res_RR){
   RR <- apply(boot_res_RR, 1, imput_aurel_byyear)
   t(RR)

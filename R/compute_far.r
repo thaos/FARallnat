@@ -48,6 +48,7 @@
 #'                                                                    mdata=mdata
 #'                                                                  ))
 #'                                       )
+#' library(FARg)
 #' ans <- compute_far.default(model="cnrm", y="eur_tas", x="gbl_tas", time="year", xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' @export
 make_compute_far <- function(ebm_bsamples=ebm_bsamples.default,
