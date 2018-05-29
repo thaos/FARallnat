@@ -127,7 +127,7 @@ continue_with_q <- function(ans, model,  p){
 
 #' Summary plots of the estimated FAR
 #'
-#' \code{summary_plot} computes a fex plots  to summarize the results of 
+#' \code{summary_plot} computes a few plots  to summarize the results of 
 #' compute_forall
 #'
 #' @param merged_res results of the compute_far_fonction

@@ -3,9 +3,9 @@
 #' @import scales
 
 # Plot results of computer far.
-# From the CI data frame plot the tiem evoltuion of the confidence intervals for
+# From the CI data frame plot the time evoltuion of the confidence intervals for
 # a given parameter
-# Creates on panel for each value of the column method
+# Creates one panel for each value of the column method
 plot_pannel_boot_time <- function(ic_df, param="FAR", main="FAR(t1)"){ 
   env <- environment()
   ic_subset <- ic_df[ic_df$param == param, ]
@@ -98,7 +98,7 @@ plot_far <- function(ic_mat, axis_trans, main="", xlim, ylim, col=NULL){
   ggplot_dual_axis(p1,p2)
 }
 
-# plot the relative risk by pannel : each pannel correspond to a diffrent value
+# plot the relative risk by pannel : each pannel correspond to a different value
 # of the method column. only a sigle y-axis is available
 plot_pannel_far <- function(ic_mat, axis_trans, main="", xlim, ylim, col=NULL){
   ticks=c(0, 1/100, 1/10, 1/5, 1/3, 1/2, 1, 2, 3, 5, 10, 100, Inf)
