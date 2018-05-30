@@ -21,7 +21,13 @@
 # # Needs to be done !
 fit_and_boot_allnat <- function(l_x_an, fit, ...){
   fit0 <- fit(y, l_x_an[[1]], ~x_all, ~x_all, time_var="time", ...)
-  l_fit <- lapply(l_x_an, function(data) fit(y, data, ~x_all, ~x_all, time_var="time", init=fit0$par, ...))
+  # l_fit <- lapply(l_x_an, function(data) fit(y, data, ~x_all, ~x_all, time_var="time", init=fit0$par, ...))
+  l_fit <- lapply(l_x_an, function(data){
+    # print(summary(data))
+    # plot(data$time, data$y)
+    # sleep(2)
+    fit(y, data, ~x_all, ~x_all, time_var="time", ...)
+  })
   l_fit
 }
 
@@ -93,9 +99,9 @@ get_allq_onperiod <- function(object, p, l_time, original_data){
 boot_allp_onperiod  <- function(l_fit, l_x_an_origin, l_time, xp){
   l_allp <- mapply(get_allp_onperiod, object=l_fit, original_data=l_x_an_origin, MoreArgs=list("xp"=xp, "l_time"=l_time), SIMPLIFY=FALSE)
   rbinding <- function(x, y){
-    print(str(x))
+    # print(str(x))
     y <- t(y[,c("x_all", "x_nat", "x_ant")]) 
-    print(str(y))
+    # print(str(y))
     rbind(x, y)
   }
   l_allp2 <- mapply(rbinding, l_allp, l_x_an_origin, SIMPLIFY=FALSE)
@@ -109,9 +115,9 @@ boot_allp_onperiod  <- function(l_fit, l_x_an_origin, l_time, xp){
 boot_allq_onperiod  <- function(l_fit, l_x_an_origin, l_time, p){
   l_allq <- mapply(get_allq_onperiod, object=l_fit, original_data=l_x_an_origin, MoreArgs=list("p"=p, "l_time"=l_time), SIMPLIFY=FALSE)
   rbinding <- function(x, y){
-    print(str(x))
+    # print(str(x))
     y <- t(y[,c("x_all", "x_nat", "x_ant")]) 
-    print(str(y))
+    # print(str(y))
     rbind(x, y)
   }
   l_allq2 <- mapply(rbinding, l_allq, l_x_an_origin, SIMPLIFY=FALSE)
@@ -125,7 +131,7 @@ boot_allq_onperiod  <- function(l_fit, l_x_an_origin, l_time, p){
 imput_aurel_byyear <- function(RR){
   l_na <- which(is.na(RR))
   n_na <- length(l_na)
-  print(n_na/length(RR))
+  # print(n_na/length(RR))
   n_inf <- floor(n_na/2)
   n_sup <- n_na - n_inf
   if(n_inf > 0) {
@@ -178,7 +184,18 @@ imput_aurel <- function(boot_res_RR){
 #' @return returns the bootstrap array with the additional row containg the new
 #' parameters computed
 #' @examples
-#' ans <- compute_far.default(model="cnrm", y="eur_tas", x="gbl_tas", time="year", xp=1.6, stat_model=gauss_fit, ci_p=0.9)
+#' library(FARg)
+#' model <- "cnrm"
+#' #load data from the package
+#' data(list=model)
+#' # formating data, e.g passing from temperature to anomalie, keep only hist
+#' # and rcp runs
+#' mdata <- format_data(get(model))
+# keep only run that posses rcp simulations
+#' if(model != "obs") mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple.default(mdata,
+#'  y="eur_tas", x="gbl_tas", time="year",
+#'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' # get bootstrap samples of p_all p_nat and p_ant
 #' bp <- ans$allp
 #' # compute the evolution of p_all relatively to its value in 1850
@@ -191,11 +208,11 @@ add_param <- function(b_onperiod, operation, name){
   ans[-dim(ans)[1],,] <- b_onperiod
   rownames_ans <- dimnames(b_onperiod)[[1]]
   dimnames(ans)[2:3] <- dimnames(b_onperiod)[2:3]
-  b_onperiod %<>% melt(., varnames=c("param", "time", "bootsample")) %>%
-  dcast(bootsample+time~param, data=.)
+  b_onperiod <- melt(b_onperiod, varnames=c("param", "time", "bootsample")) 
+  b_onperiod <- dcast(bootsample+time~param, data = b_onperiod)
   b_order  <- order(b_onperiod$time)
   new_param <- eval(substitute(operation), envir=b_onperiod[b_order,])
-  rownames_ans %<>% append(., name)
+  rownames_ans <- append(rownames_ans, name)
   ans[dim(ans)[1],,][b_order] <- new_param
   dimnames(ans)[[1]] <- rownames_ans
   ans
@@ -219,7 +236,18 @@ add_param <- function(b_onperiod, operation, name){
 #' @return returns a data.frame with columns, method, param, IC_inf, Estim (best
 #' estimate), IC_sup .
 #' @examples
-#' ans <- compute_far.default(model="cnrm", y="eur_tas", x="gbl_tas", time="year", xp=1.6, stat_model=gauss_fit, ci_p=0.9)
+#' library(FARg)
+#' model <- "cnrm"
+#' #load data from the package
+#' data(list=model)
+#' # formating data, e.g passing from temperature to anomalie, keep only hist
+#' # and rcp runs
+#' mdata <- format_data(get(model))
+# keep only run that posses rcp simulations
+#' if(model != "obs") mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple.default(mdata,
+#'  y="eur_tas", x="gbl_tas", time="year",
+#'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' # get bootstrap samples of p_all p_nat and p_ant
 #' bp <- ans$allp
 #' # compute the evolution of p_all relatively to its value in 1850

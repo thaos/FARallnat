@@ -10,25 +10,24 @@
 component}
 \usage{
 dx.gam_allnat(bsamples, bindexes, y = "y", x = "x", ant = "ant",
-  nat = "nat", time = "time", hnat = "hnat", knots = NULL,
-  fixed = FALSE, correct_ant_bias = TRUE, pre_ind = c(1850, 1879),
+  nat = "nat", time = "time", knots = NULL, fixed = FALSE,
+  correct_ant_bias = TRUE, pre_ind = c(1850, 1879),
   reuse_ant_bias = FALSE)
 
 dx.raw(bsamples, bindexes, y = "y", all = "all", ant = "ant",
-  nat = "nat", time = "time", hnat = "hnat")
+  nat = "nat", time = "time")
 
 dx.lm_gno(bsamples, bindexes, y = "y", x = "x", ghg = "ghg",
-  nat = "nat", others = "others", time = "time", hnat = "hnat",
+  nat = "nat", others = "others", time = "time",
   correct_ant_bias = TRUE, pre_ind = c(1850, 1879),
   reuse_ant_bias = FALSE)
 
 dx.gam_gno(bsamples, bindexes, y = "y", x = "x", ghg = "ghg",
-  nat = "nat", others = "others", time = "time", hnat = "hnat",
+  nat = "nat", others = "others", time = "time",
   correct_ant_bias = TRUE, pre_ind = c(1850, 1879),
   reuse_ant_bias = FALSE)
 
-dx.ebm_fit(bsamples, bindexes, y = "y", x = "x", time = "time",
-  hnat = "hnat")
+dx.ebm_fit(bsamples, bindexes, y = "y", x = "x", time = "time")
 }
 \arguments{
 \item{bsamples}{: a list of data.frame with the original dataset merged with the
@@ -46,9 +45,6 @@ used for the bootstrap}
 \item{nat}{the name of the variable that will be used as the NAT variable}
 
 \item{time}{the name of the variable that will be used as the time}
-
-\item{hnat}{the name of the variable that indicates wheters the data are from
-an historical only nat run.}
 
 \item{knots}{the numbers of knots wanted for the spline in the gam fit}
 

@@ -54,8 +54,8 @@ hmodel_sf_optim <- function(par, obs_df, forcings_df){
 # data(cnrm)
 # ebm_fit <- fit_ebm(cnrm, time="year", obs="gbl_tas")
 fit_ebm <- function(obs_df, time="year", obs="gbl_tas"){
-  data(FF)
-  data(ebm_params)
+  data(FF,  envir = environment())
+  data(ebm_params,  envir = environment())
   forcings_df <- FF$FF
   obs_df <- obs_df[, c(time, obs)]
   names(obs_df)  <- c("year", "obs")
@@ -91,7 +91,7 @@ predict.ebm_fit <- function(object, newdata, ...){
 # fit the EBM model on all bootstrap samples and predict the ALL, ANT and NAT
 # components for each samples
 boot_ebm_allnat <- function(psamples){
-  data(FF)
+  data(FF,  envir = environment())
   l_ebm <- lapply(psamples$bsamples, function(data) (fit_ebm(obs_df=data, obs="x", time="time")))
   l_ebm_an <- lapply(l_ebm, predict_gno, newdata=FF$FF)
   l_ebm_an_origin <- mapply(function(bsample, ebm_an)  merge(x=bsample, y=ebm_an, by.x="time", by.y="year"), bsample=psamples$osamples, ebm_an=l_ebm_an, SIMPLIFY=FALSE)

@@ -2,7 +2,7 @@
 # bayesian : likelihood, prior and posterior.
 
 make_likelihood <- function(y, y_year){
-  data(FF)
+  data(FF,  envir = environment())
   FF <- FF$FF
   f_ghg <- FF$ghg
   f_nat <- FF$nat
@@ -39,16 +39,16 @@ make_likelihood <- function(y, y_year){
 
 # Prior distribution
 make_prior <- function(y){
-  data(FF)
+  data(FF,  envir = environment())
   sf_sig <- FF$sig
   sig_ghg <- sf_sig["ghg"]
   sig_nat <- sf_sig["nat"]
   sig_others <- sf_sig["others"]
   mean30 <- mean(head(y, n=30))
   sd30 <- sd(head(y, n=30))
-  p_avg <- apply(parameters[, -1], 2, mean)
-  p_sd <- apply(parameters[, -1], 2, sd)
-  c_mean <- p_avg["c"]
+  # p_avg <- apply(parameters[, -1], 2, mean)
+  # p_sd <- apply(parameters[, -1], 2, sd)
+  # c_mean <- p_avg["c"]
   c_sd <- p_sd["c"]
   c0_mean <- p_avg["c0"]
   c0_sd <- p_sd["c0"]
@@ -87,8 +87,10 @@ make_prior <- function(y){
 # prior <- make_prior(y=tas_cnrm$gbl_tas)
 
 
-posterior <- function(param){
+make_posterior <- function(likelihood, prior){
+  function(param){
      return (likelihood(param) + prior(param))
+  }
 }
 
 ######## Metropolis algorithm ################
@@ -160,7 +162,7 @@ plot_mcmc <- function(chain, burnIn=1){
   names(chain)= estim$variable
   chain$id <- 1:nrow(chain)
   chain_m <- melt(chain, id=c("id"))
-  p_chain <- ggplot(data=chain_m, aes(x=id, y=value))+
+  p_chain <- ggplot(data=chain_m, aes_string(x="id", y=value))+
   geom_hline(data=estim, mapping=aes(yintercept=estim), color="blue") +
   geom_point()+
   facet_wrap(~variable, scales="free")

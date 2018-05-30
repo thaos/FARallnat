@@ -1,6 +1,6 @@
 # load the data for one model, turn it into 1961-1990 anomalies
 load_data <- function(model){
-  tas <- data(list=model)
+  tas <- data(list=model,  envir = environment())
   tas <- get(model)
   tas$year <- as.numeric(tas$year)
   tas_subset <- subset(tas, year >= 1961 & year <= 1990 & type != "nat")
@@ -17,7 +17,11 @@ load_data <- function(model){
   tas
 }
 
-# turn the data into 1961-1990 anomalies
+#' Function to prepare the tas datasets contained in the package
+#'
+#' \code{format_data} turns tas data into 1961-1991 anomalies
+#' @param tas : one of tas dataset included in the package
+#' @export
 format_data <- function(tas){
   tas$year <- as.numeric(tas$year)
   tas_subset <- subset(tas, year >= 1961 & year <= 1990 & type != "nat")
@@ -34,7 +38,11 @@ format_data <- function(tas){
   tas
 }
 
-# keep only climate runs with historical and rcp
+#' Function to prepare the tas datasets contained in the package
+#'
+#' \code{select_continuous_run} keeps only climate runs with historical and rcp
+#' @param tas : one of tas dataset included in the package
+#' @export
 select_continuous_run <- function(tas){
   tas <- tas[tas$hnat==0, ]
   runs <- unique(tas[, c("run", "type")])

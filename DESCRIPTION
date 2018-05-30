@@ -1,6 +1,6 @@
 Package: FARallnat
 Title: FAR analysis on European Summer Temperature
-Description: Toolbox to analyse the FAR on the Europen Summer Temperature
+Description: FARallnat is a toolbox to analyse the FAR on the Europen Summer Temperature
 Version: 0.1
 Authors@R: person("Soulivanh", "Thao", email="soulivanh.thao@gmail.com",
     role=c("aut","cre")

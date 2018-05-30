@@ -89,7 +89,7 @@ predict_gno <- function(gam_fit, newdata){
 compute_original_data <- function(original_data){
   names_od <- names(original_data)
   original_data <- original_data[, !(names_od %in% c("y", "x"))]
-  original_data <- subset(original_data, hnat==0)
+  # original_data <- subset(original_data, hnat==0)
   original_data <- unique(original_data)
   original_data <- original_data[order(original_data$time), ]
   original_data
@@ -109,12 +109,12 @@ boot_correct_ant_bias <- function(psamples, ant_var,  pre_ind=c(1850, 1879), reu
   osamples <- psamples$osamples
   if(reuse_ant_bias){
     bbias <- unlist(compute_ant_bias(bsamples[1], ant_var=ant_var, pre_ind=pre_ind))
-    correct_ant_bias <- function(data){
+    correct_ant_bias_reuse <- function(data){
       data[, ant_var]  <- sweep(data[, ant_var, drop=FALSE], 2, bbias)
       data
     }
-    bsamples <- lapply(bsamples, correct_ant_bias)
-    osamples <- lapply(osamples, correct_ant_bias)
+    bsamples <- lapply(bsamples, correct_ant_bias_reuse)
+    osamples <- lapply(osamples, correct_ant_bias_reuse)
   } else{
     bbias <- compute_ant_bias(bsamples, ant_var=ant_var, pre_ind=pre_ind)
     correct_ant_bias <- function(data, bias){

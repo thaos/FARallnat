@@ -55,3 +55,10 @@ functions of the FARg package
 The foo functions ...
 }
 
+\section{Combining the three steps}{
+
+
+Functions that combine those three steps can be created with the
+function \code{make_compute_far_simple}.
+}
+

@@ -1,10 +1,8 @@
-# -------------------------------------------------------------------------------------
-#' Creates function to compute the FAR 
-#'
-#' \code{make_compute_far} creates a function to compute the FAR by choosing an
-#' EBM simulation function and a method to decompose the covariate x into an ANT and a NAT
+#' Creates function to compute the FAR
+# \code{make_compute_far_simple} creates a function to compute the FAR by choosing an
+# EBM simulation function and a method to decompose the covariate x into an ANT and a NAT
 # component
-#'
+#
 #' @param ebm_bsamples a function to simulates the EBM responses. it should
 #' return a list of two list : 
 #' \itemize{
@@ -22,7 +20,7 @@
 #' @param dx_args a list of argument to be used in the ebm_bsamples. It can be
 #' @return a function with the following arguments :
 #' \itemize{
-#' \item model, the name of the model to load the data from
+#' \item mdata, a data.frame containg the variables whose names are given by x, y and time
 #' \item y, the name of variable that will be used as the variable of interest y
 #' \item x, the name of variable that will be used as the covariate x 
 #' \item time, the name of variable that will be used as the as the time variable 
@@ -42,17 +40,27 @@
 #' # Decompose x:
 #' # -  modèle gam :x_all = beta_nat * nat + s(ant)
 #' # - shift mean(ant) to 0 between 1850 and 1879
-#' compute_far.default <- make_compute_far(ebm_bsamples=ebm_bsamples.default,
+#' compute_far_simple.default <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.default,
 #'                                               ebm_args=expression(list(
 #'                                                                      model=model,
 #'                                                                    mdata=mdata
 #'                                                                  ))
 #'                                       )
 #' library(FARg)
-#' ans <- compute_far.default(model="cnrm", y="eur_tas", x="gbl_tas", time="year", xp=1.6, stat_model=gauss_fit, ci_p=0.9)
+#' model <- "cnrm"
+#' #load data from the package
+#' data(list=model)
+#' # formating data, e.g passing from temperature to anomalie, keep only hist
+#' # and rcp runs
+#' mdata <- format_data(get(model))
+# keep only run that posses rcp simulations
+#' if(model != "obs") mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple.default(mdata,
+#'  y="eur_tas", x="gbl_tas", time="year",
+#'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' @export
 make_compute_far_simple <- function(ebm_bsamples=ebm_bsamples.default,
-                                 ebm_args=list(model="cnrm"),
+                                 ebm_args=list(model="random"),
                                  decompose_x=dx.gam_allnat,
                                  dx_args=list()){ 
   # computing chain for the FAR
@@ -77,10 +85,10 @@ make_compute_far_simple <- function(ebm_bsamples=ebm_bsamples.default,
     # computing the Relative Risk(RR) for each bootstrap sample
     far <- add_param(allp, operation=p_all/p_nat, name="RR")
     # if RR=NA remplace by either +inf or 0
-    far["RR",,] %<>% imput_aurel(.) 
+    far["RR",,] <- imput_aurel(far["RR",,]) 
     # add rescaled far (notably, atan(log(RR)) the FAR plot 
-    far %<>%  add_param(., operation=al_trans(RR), name="alRR") %>% 
-    add_param(., operation=el_trans(RR), name="elRR")
+    far  <- add_param(far, operation=al_trans(RR), name="alRR") 
+    far <-  add_param(far, operation=el_trans(RR), name="elRR")
     # compute  confidence intervals for each parameters
     ic_far <- get_ic_onperiod(far, method_name=model, ci_p=ci_p)  
     ic_far$param <- as.character(ic_far$param)
@@ -92,102 +100,38 @@ make_compute_far_simple <- function(ebm_bsamples=ebm_bsamples.default,
 }
 
 # -------------------------------------------------------------------------------------
-#' List of already created compute_far functions
-#' \itemize{
-#' \item compute_far.default
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; no scaling factors 
-#'Decompose x: gam model :x_all = beta_nat * nat + s(ant); shift mean(ant) to 0 between 1850 and 1879
-#'}
-#' @rdname make_compute_far 
+#' function to compute the FAR
+#'
+#' \code{compute_far_simple.default} Function to compute the FAR from annual time-series
+# -------------------------------------------------------------------------------------
+#' @param mdata, a data.frame containing the variables whose names are given by x, y and time
+#' @param y, the name of variable that will be used as the variable of interest y
+#' @param x, the name of variable that will be used as the covariate x 
+#' @param time, the name of variable that will be used as the as the time variable 
+#' @param xp, the threshold used to define the FAR 
+#' @param R, the number of bootstrap samples
+#' @param stat_model the statistical model to explain y in function of x, either
+#' gauss_fit, gev_fit, or gpd_fit from the FARg package
+#' @param ci_p the level of the confidence intervals
+#' @param ... additional arguments if required by the stat_model function
+#' @examples
+#' library(FARg)
+#' model <- "cnrm"
+#' #load data from the package
+#' data(list=model)
+#' # formating data, e.g passing from temperature to anomalie, keep only hist
+#' # and rcp runs
+#' mdata <- format_data(get(model))
+# keep only run that posses rcp simulations
+#' if(model != "obs") mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple.default(mdata,
+#'  y="eur_tas", x="gbl_tas", time="year",
+#'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' @export
 compute_far_simple.default <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.default,
                                                 ebm_args=expression(list(
-                                                                         model=model,
+                                                                         model="random",
                                                                          mdata=mdata
-                                                                         ))
+                                                                         )),
+                                                dx_args=list(reuse_ant_bias = FALSE)
                                                 )
-#' \itemize{
-#' \item compute_far.sf_gaussian
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; random scaling factors 
-#'Decompose x: gam model :x_all = beta_nat * nat + s(ant); shift mean(ant) to 0 between 1850 and 1879
-#'}
-#' @rdname make_compute_far 
-#' @export
-compute_far_simple.sf_gaussian <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.sf_gaussian,
-                                                    ebm_args=expression(list(
-                                                                             model=model,
-                                                                             mdata=mdata
-                                                                             ))
-                                                    )
-
-#' \itemize{
-#' \item compute_far.sf_gaussian.dx_raw
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; random scaling factors 
-#'Decompose x: keeps EBM simulations as they are 
-#'}
-#' @rdname make_compute_far 
-#' @export
-compute_far_simple.sf_gaussian.dx_raw <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.sf_gaussian,
-                                                           ebm_args=expression(list(
-                                                                                    model=model,
-                                                                                    mdata=mdata
-                                                                                    )),
-                                                           decompose_x=dx.raw
-                                                           )
-
-
-#' \itemize{
-#' \item compute_far.sf_gaussian.dx_lm_gno
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; random scaling factors ; responses ghg, nat, and others instead of ant and nat
-#'Decompose x: linear model: x_all = beta_nat * nat + beta_ghg * ghg
-#'+ beta_others * others; shift mean(ghg) and mean(others) to 0 between 1850 and 1879
-#'}
-#' @rdname make_compute_far 
-#' @export
-compute_far.sf_gaussian.dx_lm_gno <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.sf_gaussian,
-                                                           ebm_args=expression(list(
-                                                                                    model=model,
-                                                                                    mdata=mdata,
-                                                                                    gno2aan=FALSE
-                                                                                    )),
-                                                           decompose_x=dx.lm_gno
-                                                           )
-
-#' \itemize{
-#' \item compute_far.sf_gaussian.dx_gam_gno
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; random scaling factors ; responses ghg, nat, and others instead of ant and nat
-#'Decompose x: gam model : x_all = beta_nat * nat + beta_ghg * ghg
-#'+ s(others); shift mean(ghg) and mean(others) to 0 between 1850 and 1879
-#'}
-#' @rdname make_compute_far 
-#' @export
-compute_far.sf_gaussian.dx_gam_gno <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.sf_gaussian,
-                                                           ebm_args=expression(list(
-                                                                                    model=model,
-                                                                                    mdata=mdata,
-                                                                                    gno2aan=FALSE
-                                                                                    )),
-                                                           decompose_x=dx.gam_gno
-                                                           )
-
-#' \itemize{
-#' \item compute_far.dx_ebm_fit
-#' EBM simulations: takes model parameters if available, otherwise takes an
-#' available set of parameters at randoms; no scaling factors
-#' Decompose x: EBM_fit (ordinary least square)
-#'}
-#' @rdname make_compute_far 
-#' @export
-compute_far.dx_ebm_fit <- make_compute_far_simple(ebm_bsamples=ebm_bsamples.default,
-                                                           ebm_args=expression(list(
-                                                                                    model=model,
-                                                                                    mdata=mdata,
-                                                                                    gno2aan=FALSE
-                                                                                    )),
-                                                           decompose_x=dx.ebm_fit
-                                                           )

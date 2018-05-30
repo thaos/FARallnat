@@ -19,13 +19,23 @@ atan(log(y)) axis ; axis_trans = "el" for a symetrized FAR axis}
 
 \item{ylim}{a vector of two values for the limits of the y-axis}
 
-\item{color}{a vector of colors for custom colors, should be the same length
+\item{col}{a vector of colors for custom colors, should be the same length
 as the number of different values of the ic_mat method column.}
 }
 \description{
 \code{plot_far} create a symetric double y-axis plot for the evolution FAR and the RR
 }
 \examples{
-ans <- compute_forall(compute_far.dx_ebm_fit, l_models=c("cnrm", "ipsl"), stat_model=gpd_fit, qthreshold =0.90, p=0.01, R=3)
-plot_far(ans, axis_trans="al", col=gg_color_hue(2))
+library(FARg)
+model <- "cnrm"
+#load data from the package
+data(list=model)
+# formating data, e.g passing from temperature to anomalie, keep only hist
+# and rcp runs
+mdata <- format_data(get(model))
+if(model != "obs") mdata <- select_continuous_run(mdata)
+ans <- compute_far_simple.default(mdata,
+ y="eur_tas", x="gbl_tas", time="year",
+  xp=1.6, stat_model=gauss_fit, ci_p=0.9)
+plot_far(ans$ic_far, axis_trans="al", col=gg_color_hue(2))
 }

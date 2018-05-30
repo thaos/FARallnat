@@ -18,7 +18,7 @@
 # N       : number of points simulated   
 
 held_model  <- function (FF, model="CNRM"){
-  data(ebm_params)
+  data(ebm_params,  envir = environment())
   model_param <- subset(ebm_params, models_name == model)
   list2env(model_param, environment())
   #-0- Forcing functions

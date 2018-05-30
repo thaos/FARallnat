@@ -103,7 +103,7 @@ ebm_gno  <- function(model, FF){
 # - a function which choses the EBM parameters according to a model name
 make_boot_ebm <- function(sf_fun=sf.default, cm_fun=choose_model.default){
   function(model, R){
-    data(FF)
+    data(FF,  envir = environment())
     l_models <- lapply(rep(model, R), cm_fun)
     l_FF <- lapply(seq.int(R), function(r) sf_fun(FF))
     ffdata <- mapply(ebm_gno, model=l_models, FF=l_FF, SIMPLIFY=FALSE)

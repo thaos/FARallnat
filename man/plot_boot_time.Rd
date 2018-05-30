@@ -22,6 +22,16 @@ intervals}
 confidence intervales
 }
 \examples{
-ans <- compute_forall(compute_far.dx_ebm_fit, l_models=c("cnrm", "ipsl"), stat_model=gpd_fit, qthreshold =0.90, p=0.01, R=3)
-plot_boot_time(ans, param="p_all", main="p_all") 
+library(FARg)
+model <- "cnrm"
+#load data from the package
+data(list=model)
+# formating data, e.g passing from temperature to anomalie, keep only hist
+# and rcp runs
+mdata <- format_data(get(model))
+if(model != "obs") mdata <- select_continuous_run(mdata)
+ans <- compute_far_simple.default(mdata,
+ y="eur_tas", x="gbl_tas", time="year",
+  xp=1.6, stat_model=gauss_fit, ci_p=0.9)
+plot_boot_time(ans$ic_far, param="p_all", main="p_all") 
 }
