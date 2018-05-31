@@ -17,10 +17,10 @@ yvar <-  "eur_tas"
 tvar <- "year"
 
 compute_and_plot_far <- function(mdata, y="y", x="x", time="time", xp=1.6 , R=3, stat_model=gauss_fit, ci_p=0.9, ...){
-  ans <- compute_far_simple.default(mdata,
-                                    y = yvar, x = xvar, time = tvar,
-                                    xp = xp, R  = R, ci_p = ci_p,
-                                    stat_model = stat_model, ...) 
+  ans <- compute_far_simple(mdata,
+                            y = yvar, x = xvar, time = tvar,
+                            xp = xp, R  = R, ci_p = ci_p,
+                            stat_model = stat_model, ...) 
   ellipsis <- list(...)
   ellipsis <- sapply(ellipsis, as.character)
   if(length(ellipsis) > 0 ){
@@ -35,7 +35,7 @@ compute_and_plot_far <- function(mdata, y="y", x="x", time="time", xp=1.6 , R=3,
   oridat <- data.frame(year = mdata[, tvar],
                        x = mdata[, xvar],
                        y = mdata[, yvar])
-  print(head(oridat))
+  # print(head(oridat))
   merged_res <- ans$ic_far
   p_dx <- default_plot(subset(merged_res, param %in% c("x_all", "x_ant", "x_nat"))) +
     geom_hline(aes_q(yintercept=xp), linetype=2) + 
@@ -55,7 +55,9 @@ compute_and_plot_far <- function(mdata, y="y", x="x", time="time", xp=1.6 , R=3,
   
   plot_far(merged_res, "al")
   dev.off()
-  return(ans)
+  invisible(ans)
 }
 compute_and_plot_far(mdata, y = yvar, x = xvar , time = tvar, xp=1.6 , R=3, stat_model=gauss_fit, ci_p=0.9)
+compute_and_plot_far(mdata, y = yvar, x = xvar , time = tvar, xp=1.6 , R=3,
+                     stat_model=gev_fit, ci_p=0.9)
 compute_and_plot_far(mdata, y = yvar, x = xvar , time = tvar, xp=1.6 , R=3, stat_model=gpd_fit, ci_p=0.9, qthreshold = .9)

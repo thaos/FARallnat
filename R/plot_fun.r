@@ -36,15 +36,13 @@ plot_pannel_boot_time <- function(ic_df, param="FAR", main="FAR(t1)"){
 #' @param alpha the transparency of the shading for the confidence intervals
 #' @examples
 #' library(FARg)
-#' model <- "cnrm"
 #' #load data from the package
-#' data(list=model)
 #' # formating data, e.g passing from temperature to anomalie, keep only hist
 #' # and rcp runs
-#' mdata <- format_data(get(model))
-# keep only run that posses rcp simulations
-#' if(model != "obs") mdata <- select_continuous_run(mdata)
-#' ans <- compute_far_simple.default(mdata,
+#' mdata <- format_data(cnrm)
+#' # keep only run that posses rcp simulations
+#' mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple(mdata,
 #'  y="eur_tas", x="gbl_tas", time="year",
 #'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' plot_boot_time(ans$ic_far, param="p_all", main="p_all") 
@@ -90,15 +88,13 @@ gg_color_hue <- function(n) {
 #' as the number of different values of the ic_mat method column.
 #' @examples
 #' library(FARg)
-#' model <- "cnrm"
 #' #load data from the package
-#' data(list=model)
 #' # formating data, e.g passing from temperature to anomalie, keep only hist
 #' # and rcp runs
-#' mdata <- format_data(get(model))
-# keep only run that posses rcp simulations
-#' if(model != "obs") mdata <- select_continuous_run(mdata)
-#' ans <- compute_far_simple.default(mdata,
+#' mdata <- format_data(cnrm)
+#' # keep only run that posses rcp simulations
+#' mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple(mdata,
 #'  y="eur_tas", x="gbl_tas", time="year",
 #'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' plot_far(ans$ic_far, axis_trans="al", col=gg_color_hue(2))
@@ -161,15 +157,13 @@ rrtofar <- function(x) 1 - 1/x
 #' intervales produced by the compute_far functions, i.e. the ic_far element of the returned list of the compute_far functions
 #' @examples
 #' library(FARg)
-#' model <- "cnrm"
 #' #load data from the package
-#' data(list=model)
 #' # formating data, e.g passing from temperature to anomalie, keep only hist
 #' # and rcp runs
-#' mdata <- format_data(get(model))
-# keep only run that posses rcp simulations
-#' if(model != "obs") mdata <- select_continuous_run(mdata)
-#' ans <- compute_far_simple.default(mdata,
+#' mdata <- format_data(cnrm)
+#' # keep only run that posses rcp simulations
+#' mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple(mdata,
 #'  y="eur_tas", x="gbl_tas", time="year",
 #'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' ic_x <- subset(ans$ic_far, param %in% c("x_all", "x_ant", "x_nat"))
@@ -193,15 +187,13 @@ default_plot <- function(ic_far){
 #' @param gp a ggplot2 plot 
 #' @examples
 #' library(FARg)
-#' model <- "cnrm"
 #' #load data from the package
-#' data(list=model)
 #' # formating data, e.g passing from temperature to anomalie, keep only hist
 #' # and rcp runs
-#' mdata <- format_data(get(model))
-# keep only run that posses rcp simulations
-#' if(model != "obs") mdata <- select_continuous_run(mdata)
-#' ans <- compute_far_simple.default(mdata,
+#' mdata <- format_data(cnrm)
+#' # keep only run that posses rcp simulations
+#' mdata <- select_continuous_run(mdata)
+#' ans <- compute_far_simple(mdata,
 #'  y="eur_tas", x="gbl_tas", time="year",
 #'   xp=1.6, stat_model=gauss_fit, ci_p=0.9)
 #' plot_far(ans$ic_far, axis_trans="al", col=gg_color_hue(2))

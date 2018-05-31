@@ -47,8 +47,8 @@ ebm_bsamples.default <- make_ebm_bsamples(boot_ebm.default)
 #' @examples
 #' # Simulate 5 EBM realisations with no random scaling factors and express the
 #' # results in GHG, NAT and OTHERS responses
-#' data(bnu)
-#' ebm_bsamples.sf_gaussian(mdata=bnu, R=5, model="bnu", by="year", gno2aan=FALSE)
+#' data(cnrm)
+#' ebm_bsamples.sf_gaussian(mdata=cnrm, R=5, model="cnrm", by="year", gno2aan=FALSE)
 #' @rdname ebm_bsamples.default 
 #' @export
 ebm_bsamples.sf_gaussian <- make_ebm_bsamples(boot_ebm.cm_default.sf_gaussian)
