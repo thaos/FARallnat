@@ -55,8 +55,8 @@ data(cnrm)
 ebm_bsamples.default(mdata=cnrm, R=5, model="cnrm", by="year", gno2aan=TRUE)
 # Simulate 5 EBM realisations with no random scaling factors and express the
 # results in GHG, NAT and OTHERS responses
-data(bnu)
-ebm_bsamples.sf_gaussian(mdata=bnu, R=5, model="bnu", by="year", gno2aan=FALSE)
+data(cnrm)
+ebm_bsamples.sf_gaussian(mdata=cnrm, R=5, model="cnrm", by="year", gno2aan=FALSE)
 # Simulate 5 EBM realisations with random scaling factors and express the
 # results in GHG, NAT and OTHERS responses
 data(cnrm)
